@@ -1,4 +1,4 @@
-# Online Course System
+# Online Course System Django
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -13,7 +13,7 @@ The Online Course System is a Django-based web application that allows users to 
 - Admin panel for managing courses, users, and content
 
 ## Installation and Usage
-1. Clone the repository: `git clone https://github.com/Imkaushikdolui/online_course_system.git`
+1. Clone the repository: `[git clone https://github.com/Imkaushikdolui/online_course_system_django.git]`
 2. Navigate to the project directory: `cd online_course_system`
 3. Create a virtual environment: `python -m venv env`
 4. Activate the virtual environment:
