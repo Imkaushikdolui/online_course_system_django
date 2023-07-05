@@ -2,6 +2,9 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+## Demo
+https://ocs-django.onrender.com/
+
 ## Description
 The Online Course System is a Django-based web application that allows users to access and manage online courses. It provides features such as user registration, course enrollment, video lessons, quizzes, and more.
 
