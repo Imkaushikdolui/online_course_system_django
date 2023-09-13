@@ -10,6 +10,8 @@ The Online Course System is a Django-based web application that allows users to 
 
 ## Features
 - User registration and authentication
+- Django Celery worker to handle the task in background
+- Email Notifications [SMTP]
 - Course browsing and enrollment
 - Video lessons with progress tracking
 - User dashboard to track course progress
@@ -26,6 +28,7 @@ The Online Course System is a Django-based web application that allows users to 
 6. Apply database migrations: `python manage.py migrate`
 7. Start the development server: `python manage.py runserver`
 8. Access the application in your web browser at `http://localhost:8000`
+9. To use celery worker open a new terminal and run this command `celery -A online_course.celery worker -l info`
 
 ## Configuration
 - Database: By default, the project uses an SQLite database. Update the `DATABASES` settings in `settings.py` for production deployment.
