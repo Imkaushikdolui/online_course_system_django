@@ -59,13 +59,13 @@ class Account(AbstractBaseUser):
     is_staff                = models.BooleanField(default=False)
     is_superuser            = models.BooleanField(default=False)
 
-    USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['email','role','name']
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username','role','name']
 
     objects = MyAccountManager()
     
     def __str__(self):
-        return f"{self.name} {self.email} {self.role}"
+        return f"{self.name}"
     
     def has_perm(self, perm, obj=None):
         return self.is_admin
@@ -73,3 +73,10 @@ class Account(AbstractBaseUser):
     def has_module_perms(self,app_label):
         return True
     
+class Profile(models.Model):
+    user = models.OneToOneField(Account, on_delete=models.CASCADE)
+    forget_password_token = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return self.user.username

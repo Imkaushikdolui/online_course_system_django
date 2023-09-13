@@ -2,7 +2,7 @@ import os
 from django.conf import settings
 from django.utils import timezone
 from django.shortcuts import render , redirect,get_object_or_404
-from .models import Course,Teacher,Student,Course_content,Payment
+from .models import Course,Teacher,Student,Course_content,Payment,Category
 from accounts.models import Account
 from base.forms import CourseForm,CourseContentForm
 from django.views.generic import CreateView
@@ -16,7 +16,9 @@ import uuid
 from django.db.models import Q,Sum, Count
 from django.core.mail import send_mail
 from online_course.settings import EMAIL_HOST_USER
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
+from online_course.tasks import send_mail_celery
 
 def home(request):
     course = Course.objects.all()
@@ -32,7 +34,8 @@ def welcomepage(request):
 
 def studentdashboard(request):
     course = Course.objects.all()
-    return render(request, 'base/studentdashboard.html',{'course':course})
+    category = Category.objects.all()
+    return render(request, 'base/studentdashboard.html',{'course':course,'category':category})
 
 
 def admindashboard(request):
@@ -76,7 +79,7 @@ def create_course(request, teacher_id):
                 message = f"Dear student, a new course '{course.name}' has been created by {teacher.name}. Check it out!"
                 from_email = EMAIL_HOST_USER
                 to_email = student_email
-                send_mail(subject, message, from_email, [to_email])
+                send_mail_celery.delay(subject, message, from_email, [to_email])
 
             return redirect('base:tdashboard')
     else:
@@ -136,7 +139,7 @@ def add_course_content(request, pk):
             from_email = EMAIL_HOST_USER  
             recipient_list = enrolled_students
 
-            send_mail(subject, message, from_email, recipient_list)
+            send_mail_celery.delay(subject, message, from_email, recipient_list)
 
             return redirect('base:course_details', pk=pk)
     else:
@@ -246,11 +249,27 @@ def payment_completed(request):
 
                 )
                 payment.save()
+                # Send confirmation emails
+                student_email_subject = 'Course Purchase Confirmation'
+                student_email_message = f'Thank you for purchasing the course "{course.name}". Your invoice number is {invoice_number}.'
+                student_email_from = EMAIL_HOST_USER
+                student_email_recipient = [request.user.email]
+                send_mail_celery.delay(student_email_subject, student_email_message, student_email_from, student_email_recipient)
+                print('mail sended to student')
+                
+                teacher_email_subject = 'Course Sale Notification'
+                teacher_email_message = f'Your course "{course.name}" has been purchased by {request.user.username}.'
+                teacher_email_from = EMAIL_HOST_USER
+                teacher_email_recipient = [course.teacher.teacher_id.email]
+                send_mail_celery.delay(teacher_email_subject, teacher_email_message, teacher_email_from, teacher_email_recipient)
+                print('mail sended to teacher')
 
                 # Clear the session data
                 del request.session['checkout_course_id']
                 del request.session['invoice_number']
                 del request.session['checkout_course_price']
+                
+                
             except Exception as e:
                 print("Exception occurred while creating Payment instance:", str(e))
 
@@ -280,16 +299,67 @@ def enroll_course_details(request,pk):
     }
     return render(request,'base/enroll_course_details.html',context)
 
+
 def search(request):
     q = request.GET.get('q', '')
-    courses = Course.objects.filter(
+    course_list = Course.objects.filter(
         Q(name__icontains=q) |
         Q(price__icontains=q) |
         Q(teacher__name__icontains=q) |
         Q(category__name__icontains=q)
     )
 
-    return render(request, 'base/filter_course.html', {'courses': courses})
+    items_per_page = 2  
+
+    paginator = Paginator(course_list, items_per_page)
+    page = request.GET.get('page')
+
+    try:
+        courses = paginator.page(page)
+        
+    except PageNotAnInteger:
+        
+        courses = paginator.page(1)
+    except EmptyPage:
+        
+        courses = paginator.page(paginator.num_pages)
+
+    return render(request, 'base/search_course.html', {'courses': courses, 'q': q} )
+
+def filtered_results(request):
+    # Retrieve filter parameters from the URL query string
+    min_price = request.GET.get('min_price')
+    max_price = request.GET.get('max_price')
+    category_id = request.GET.get('category_id')
+
+    # Filter courses based on the parameters
+    courses = Course.objects.all()
+
+    if min_price:
+        courses = courses.filter(price__gte=min_price)
+
+    if max_price:
+        courses = courses.filter(price__lte=max_price)
+
+    if category_id:
+        courses = courses.filter(category__id=category_id)
+    
+    items_per_page = 2  
+
+    paginator = Paginator(courses, items_per_page)
+    page = request.GET.get('page')
+
+    try:
+        courses = paginator.page(page)
+        
+    except PageNotAnInteger:
+        
+        courses = paginator.page(1)
+    except EmptyPage:
+        
+        courses = paginator.page(paginator.num_pages)
+
+    return render(request, 'base/filtered_results.html', {'courses': courses})
 
 def teacher_stats(request, pk):
     teacher = Teacher.objects.get(teacher_id=pk)

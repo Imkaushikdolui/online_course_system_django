@@ -33,6 +33,11 @@ urlpatterns = [
     # otp verification
     path('email2fa/',views.Otpverify,name='Otpverify'),
     path('email2falogin/',views.LoginOtpVerify,name='LoginOtpverify'),
+    
+    # forget password
+    path('forget-password/',views.ForgetPassword,name='ForgetPassword'),
+    path('change-password/<token>/',views.ChangePassword,name='ChangePassword'),
+    
 
 ]
 if settings.DEBUG:

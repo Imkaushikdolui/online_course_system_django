@@ -59,7 +59,9 @@
                 
                     <h1 class="h3 mt-1 font-weight-normal">Login</h1>
 
-                    <input type="username" name="username" id="inputUsername" class="form-control" placeholder="Username" required autofocus>
+                    <!-- <input type="username" name="username" id="inputUsername" class="form-control" placeholder="Username" required autofocus> -->
+
+                    <input type="email" name="email" id="inputEmail" class="form-control" placeholder="Email" required autofocus>
 
                     <input type="password" name="password" id="inputPassword" class="form-control mt-2" placeholder="Password" required>
                     
@@ -80,7 +82,9 @@
                     <button class="btn btn-lg btn-dark btn-block mt-2" type="submit">Login</button>
                 
                     <p class="text-center text-muted mt-5">Dont Have an account? <a href="{% url 'signup' %}"
-                    class="fw-bold text-body"><u>Register here</u></a></p> 
+                      class="fw-bold text-body"><u>Register here</u></a></p> 
+                    <p class="text-center text-muted mt-5">Forgot Password? <a href="{% url 'ForgetPassword' %}"
+                        class="fw-bold text-body"><u>Click here</u></a></p> 
             </form>
         </div>
       </div>

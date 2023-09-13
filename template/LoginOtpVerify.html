@@ -18,30 +18,38 @@
     align-items: center;
     padding-top: 100px;
   }
-        .card {
-          width: 400px;
-          border: none;
-          height: 300px;
-          z-index: 1;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-        .card h6 {
-          color: red;
-          font-size: 20px;
-        }
-        .card small {
-          color: black;
-          padding-bottom: 20px;
-        }
-        .validate {
-          border-radius: 20px;
-          height: 40px;
-          background-color: red;
-          border: 1px solid red;
-          width: 140px;
-        }
+  .card {
+    max-width: 400px;
+    width: 90%;
+    border: none;
+    height: 300px;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .card h6 {
+    color: red;
+    font-size: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .card small {
+    color: black;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .validate {
+    border-radius: 20px;
+    height: 40px;
+    background-color: red;
+    border: 1px solid red;
+    width: 140px;
+  }
       </style>
         </head>
         <body>
@@ -78,7 +86,7 @@
                     url: "{% url 'LoginOtpverify' %}",
                     data: {
                         'otp': otp,
-                        'username': '{{username}}',
+                        'email': '{{email}}',
                         'password': '{{password}}',
                         'role': '{{role}}'
                     },

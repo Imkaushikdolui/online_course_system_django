@@ -1,45 +1,214 @@
-{% extends 'main.html' %}
-
+{% extends 'main.html' %} 
 {% block dashboard %}
 <style>
-    .heading {
-      width: 100%;
-      min-height: 100vh;
-      background-image: url("/static/bg.jpg");
-      background-size: cover;
-      background-position: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding-top: 100px;
+  .heading {
+    width: 100%;
+    min-height: 100vh;
+    background-image: url("/static/bg.jpg");
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 100px;
+  }
+
+  .card {
+    margin-bottom: 30px;
+  }
+
+  .card-title {
+    margin-top: 10px;
+    margin-bottom: 0;
+    font-size: 1.2rem;
+  }
+
+  .card-subtitle {
+    color: #888;
+    margin-top: 5px;
+  }
+
+  .card-description {
+    margin-top: 15px;
+  }
+
+  .card-teacher {
+    margin-top: 10px;
+  }
+
+  .card-category {
+    margin-top: 10px;
+  }
+
+  .card-price {
+    margin-top: 10px;
+  }
+
+  .card-button {
+    margin-top: 15px;
+    text-align: center;
+  }
+
+  @media (min-width: 576px) {
+    .row-cols-md-2 {
+      column-count: 2;
     }
+  }
+
+  @media (min-width: 992px) {
+    .row-cols-lg-3 {
+      column-count: 3;
+    }
+  }
+  /* Style for the filter dropdown button */
+.nav-item.dropdown .nav-link.dropdown-toggle {
+    background-color: transparent; /* Background color of the button */
+    color: #fff; /* Text color of the button */
+    border: none; /* Remove border */
+    font-weight: bold;
+}
+
+/* Style for the dropdown menu */
+.dropdown-menu {
+    background-color: #fff; /* Background color of the dropdown menu */
+    border: none; /* Remove border */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Add shadow */
+}
+
+/* Style for the dropdown form groups and labels */
+.dropdown-menu .form-group {
+    margin: 10px; /* Add margin between form groups */
+}
+
+/* Style for the dropdown form labels */
+.dropdown-menu label {
+    font-weight: bold; /* Make labels bold */
+}
+
+/* Style for the dropdown form inputs */
+.dropdown-menu input[type="number"],
+.dropdown-menu select {
+    width: 100%; /* Set the width of inputs and select to 100% */
+    padding: 5px; /* Add padding to inputs and select */
+    border: 1px solid #ccc; /* Add border */
+    border-radius: 5px; /* Add border radius */
+}
+
+/* Style for the Apply button */
+.dropdown-menu button {
+    background-color: #007bff; /* Button background color */
+    color: #fff; /* Button text color */
+    border: none; /* Remove button border */
+    border-radius: 5px; /* Add border radius */
+    padding: 5px 15px; /* Add padding */
+}
+
+/* Style for the Apply button on hover */
+.dropdown-menu button:hover {
+    background-color: #0056b3; /* Change button background color on hover */
+}
+.filter{
+  position:absolute;
+  top: 100px;
+  left: 0;
+}
 </style>
 <div class="heading">
-  <h1 style="color:white;">Courses Available</h1>
-  <hr>
-  <br>
+  <h1 style="color: white">Courses Available</h1>
+
+  <hr />
+  <br />
+
+  <!-- Filter Dropdown -->
+  <div class="row mx-1 filter">
+    <div class="col-md-3 mb-3">
+      <div class="nav-item dropdown" style="width:300px;">
+        <a
+          class="nav-link dropdown-toggle"
+          href="#"
+          id="filterDropdown"
+          role="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          Filter
+        </a>
+        <div class="dropdown-menu" aria-labelledby="filterDropdown">
+          <!-- Price range filter -->
+          <form
+            class="px-4 py-3"
+            method="get"
+            action="{% url 'base:filtered_results' %}"
+          >
+            <div class="form-group">
+              <label for="min_price">Min Price</label>
+              <input
+                type="number"
+                class="form-control"
+                id="min_price"
+                name="min_price"
+                placeholder="Min Price"
+              />
+            </div>
+            <div class="form-group">
+              <label for="max_price">Max Price</label>
+              <input
+                type="number"
+                class="form-control"
+                id="max_price"
+                name="max_price"
+                placeholder="Max Price"
+              />
+            </div>
+            <button type="submit" class="btn btn-primary">Apply</button>
+          </form>
+          <div class="dropdown-divider"></div>
+          <!-- Category filter -->
+          <form
+            class="px-4 py-3"
+            method="get"
+            action="{% url 'base:filtered_results' %}"
+          >
+            <div class="form-group">
+              <label for="category_id">Category</label>
+              <select class="form-control" id="category_id" name="category_id">
+                <option value="">Categories</option>
+                <!-- Populate options with category data -->
+                {% for c in category %}
+                <option value="{{ c.id }}">{{ c.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Apply</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 mx-1">
     {% for c in course %}
     <div class="col mb-4">
       <div class="card bg-info-subtle">
         <div class="card-body">
           <h1>{{c.name.upper}}</h1>
-          <hr>
-          <div style="float: right;">
-            <p class="card-title">
-              <small class="text-muted">{{ c.course_post_date }}</small>
-            </p>
+          <hr />
+          <p class="card-subtitle">{{ c.course_post_date }}</p>
+
+          <div class="card-description">
+            <h5 class="card-title">Description:</h5>
+            <p>{{ c.body }}</p>
           </div>
-          
-          <h5 class="card-title">Description: {{ c.body }}</h5>
-          
-          <h5 class="card-title">Teacher: {{ c.teacher }}</h5>
-          
-          <h5 class="card-title">Course price: ₹{{ c.price }}.00</h5>
-          
-          <h5 class="card-title">Category: {{ c.category }}</h5>
-          
-          <a href="/checkout/{{c.id}}/" class="btn btn-success">Course Details</a>
+
+          <h5 class="card-teacher">Teacher: {{ c.teacher }}</h5>
+
+          <h5 class="card-category">Category: {{ c.category }}</h5>
+
+          <h5 class="card-price">Course price: ₹{{ c.price }}.00</h5>
+
+          <div class="card-button">
+            <a href="/checkout/{{c.id}}/" class="btn btn-success btn-block">Course Details</a>
+          </div>
         </div>
       </div>
     </div>

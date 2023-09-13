@@ -1,0 +1,89 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<style>
+    .heading {
+      width: 100%;
+      min-height: 100vh;
+      color: white;
+      background-image: url("/static/bg.jpg");
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 100px;
+    }
+
+    .search-result-card {
+      width: 40%;
+      margin-bottom: 30px;
+    }
+    .pagination {
+      text-align: center;
+      margin-top: 20px;
+  }
+
+  .pagination a {
+      display: inline-block;
+      padding: 5px 10px;
+      margin: 0 5px;
+      background-color: #007bff;
+      color: white;
+      border: 1px solid #007bff;
+      text-decoration: none;
+      border-radius: 3px;
+  }
+
+  .pagination .current-page {
+      display: inline-block;
+      padding: 5px 10px;
+      margin: 0 5px;
+      background-color: #007bff;
+      color: white;
+      border: 1px solid #007bff;
+      text-decoration: none;
+      border-radius: 3px;
+  }
+
+  .pagination a:hover {
+      background-color: #0056b3;
+      border: 1px solid #0056b3;
+  }
+</style>
+<div class="heading">
+  <h1>Search Results:</h1>
+  <br><br>
+  {% for c in courses %}
+  <div class="card search-result-card bg-info-subtle">
+    <div class="card-body">
+      <h1>{{ c.name.upper }}</h1>
+      <hr>
+      <p class="card-title"><small class="text-muted" style="float: right;">{{ c.course_post_date }}</small></p>
+      <h5 class="card-title">Description: {{ c.body }}</h5>
+      <h5 class="card-title">Teacher: {{ c.teacher }}</h5>
+      <h5 class="card-title">Course price: ₹{{ c.price }}.00</h5>
+      <h5 class="card-title">Category: {{ c.category }}</h5>
+      <a href="/checkout/{{ c.id }}/" class="btn btn-success">Course Details</a>
+    </div>
+  </div>
+  {% endfor %}
+
+  <!-- Pagination links -->
+  <div class="pagination">
+    <span class="step-links">
+      {% if courses.has_previous %}
+        <a href="?q={{ q }}&page=1">&laquo; first</a>
+        <a href="?q={{ q }}&page={{ courses.previous_page_number }}">previous</a>
+      {% endif %}
+
+      <span class="current-page">{{ courses.number }}</span>
+
+      {% if courses.has_next %}
+        <a href="?q={{ q }}&page={{ courses.next_page_number }}">next</a>
+        <a href="?q={{ q }}&page={{ courses.paginator.num_pages }}">last &raquo;</a>
+      {% endif %}
+    </span>
+  </div>
+</div>
+{% endblock content %}

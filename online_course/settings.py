@@ -36,9 +36,7 @@ INSTALLED_APPS = [
     'base',
     # paypal integration
     'paypal.standard.ipn',
-
-
-
+    
     # preinstalled apps
     'material', #custom-admin-panel
     'material.admin', #custom-admin-panel
@@ -49,6 +47,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    # celery
+    'django_celery_results'
 ]
 
 MIDDLEWARE = [
@@ -87,10 +88,21 @@ WSGI_APPLICATION = 'online_course.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-DATABASES = {
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
+
+DATABASES={
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'ocs',  #change the db to use
+        'USER':'postgres',
+        'PASSWORD':'admin',
+        'HOST':'localhost',
+        'PORT':'5432'
     }
 }
 
@@ -153,3 +165,13 @@ EMAIL_USE_SSL = False
 # paypal credentials
 PAYPAL_RECEIVER_EMAIL = "sb-tioev26192971@business.example.com"
 PAYPAL_TEST = True
+
+
+# CELERY CONFIG
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Asia/Kolkata'
+
+CELERY_RESULT_BACKEND = 'django-db'

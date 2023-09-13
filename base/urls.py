@@ -30,6 +30,8 @@ urlpatterns = [
     path('enroll_courses_details/<str:pk>/',views.enroll_course_details,name='enroll_course_details'),
     path('search/', views.search, name='search'),
     path('teacher_stats/<str:pk>/',views.teacher_stats,name='teacher_stats'),
+    
+    path('filtered-results/', views.filtered_results, name='filtered_results'),
 
 
 
